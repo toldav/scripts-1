@@ -30,7 +30,7 @@ class SatelliteConnect(object):
         self.key = self.client.auth.login(self.SATELLITE_LOGIN, self.SATELLITE_PASS)
 
     def _check_env(self, env_var):
-        if not os.environ.get('SATELLITE_PASS'):
+        if not os.environ.get(env_var):
             print("{} error please set environment varible {} and re-run script".format(sys.argv[0], env_var))
             sys.exit(-1)
 
