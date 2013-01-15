@@ -4,6 +4,31 @@ import xmlrpclib
 import os
 import sys
 
+class SystemGroup(object):
+    def __init__(self, groupname):
+        self.groupname = groupname
+        self.client = SatelliteConnect().client
+        self.key = SatelliteConnect().key
+
+        try:
+            self.client.systemgroup.getDetails(self.key, self.groupname)
+        except xmlrpclib.Fault as err:
+            print("Error invalid group name {}".format(self.groupname))
+            sys.exit(-1)
+
+    def get_details(self):
+        groupdetails = self.client.systemgroup.getDetails(self.key, self.groupname)
+        return(groupdetails)
+
+    def list_systems(self):
+        hostlist=[]
+        serverdetails = self.client.systemgroup.listSystems(self.key, self.groupname)
+        for info in serverdetails:
+            if info:
+                hostlist.append(info.get('hostname'))
+        return hostlist
+
+
 class Systeminfo(object):
     def __init__(self, sysid):
         self.sysid = sysid
@@ -36,7 +61,7 @@ class Systeminfo(object):
         return "{}".format(self.get_name())
 
 class SatelliteConnect(object):
-    SATELLITE_URL = "http://servername/rpc/api"
+    SATELLITE_URL = "http://nebula.nydc.fxcorp.prv/rpc/api"
     SATELLITE_LOGIN = os.environ['USER']
     SATELLITE_PASS = os.environ.get('SATELLITE_PASS',None)
 
@@ -69,9 +94,5 @@ class SatelliteConnect(object):
         systemlist = self.client.system.listSystems(self.key)
         return([ system.get('name') for system in systemlist ])
 
-if __name__ == '__main__':
-    sc = SatelliteConnect()
-    sysid = sc.get_systemid('servername')
-    print(sc.get_systeminfo('servername').get_memory())
-    print(sc.get_systeminfo('servername').get_hostip())
-    print(sc.get_systeminfo('servername').get_runningkernel())
+    def get_systemgroup(self, groupname):
+        return(SystemGroup(groupname))
