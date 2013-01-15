@@ -61,7 +61,7 @@ class Systeminfo(object):
         return "{}".format(self.get_name())
 
 class SatelliteConnect(object):
-    SATELLITE_URL = "http://nebula.nydc.fxcorp.prv/rpc/api"
+    SATELLITE_URL = os.environ.get('SATELLITE_SVR',None)
     SATELLITE_LOGIN = os.environ['USER']
     SATELLITE_PASS = os.environ.get('SATELLITE_PASS',None)
 
